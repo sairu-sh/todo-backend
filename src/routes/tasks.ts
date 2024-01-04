@@ -20,7 +20,7 @@ router.get("/", validateReqQuery(getTasksSchema), getAll);
 router.get("/completed", validateReqQuery(getTasksSchema), getCompleted);
 router.get("/remaining", validateReqQuery(getTasksSchema), getRemaining);
 router.post("/", validateReqBody(createTaskSchema), createTask);
-router.patch("/:id", validateReqQuery(taskOperationSchema), toggleCompleted);
-router.delete("/:id", validateReqQuery(taskOperationSchema), deleteTask);
+router.patch("/:id", toggleCompleted);
+router.delete("/:id", deleteTask);
 
 export default router;

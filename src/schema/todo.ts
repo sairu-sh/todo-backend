@@ -21,9 +21,8 @@ const createTaskSchema = Joi.object({
 });
 
 const taskOperationSchema = Joi.object({
-  id: Joi.string().length(10).required().messages({
+  id: Joi.required().messages({
     "any.required": "Task ID is required",
-    "string.length": "Task ID should be exactly 10 characters long",
   }),
 });
 

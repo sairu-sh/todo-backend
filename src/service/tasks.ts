@@ -1,41 +1,41 @@
-import * as taskModel from "../model/tasks";
+import { SlowBuffer } from "buffer";
+import TaskModel from "../model/tasks";
 
 type CreateTaskParams = {
   title: string;
   description?: string;
 };
 
-export const createTask = ({ title, description }: CreateTaskParams) => {
-  const status = taskModel.createTask({ title, description });
+export const createTask = async (body: CreateTaskParams) => {
+  const status = await TaskModel.createTask(body);
   return status;
 };
 
-export const getAll = () => {
-  const data = taskModel.getAll();
+export const getAll = async () => {
+  const data = await TaskModel.getAll();
 
   return data;
 };
 
-export const getCompleted = () => {
-  const data = taskModel.getCompleted();
+export const getCompleted = async () => {
+  const data = await TaskModel.getCompleted();
 
   return data;
 };
 
-export const getRemaining = () => {
-  const data = taskModel.getRemaining();
+export const getRemaining = async () => {
+  const data = await TaskModel.getRemaining();
 
   return data;
 };
 
-export const toggleCompleted = (id: string) => {
-  const data = taskModel.toggleCompleted(id);
-
+export const toggleCompleted = async (id: number) => {
+  const data = await TaskModel.toggleCompleted(id);
   return data;
 };
 
-export const deleteTask = (id: string) => {
-  const status = taskModel.deleteTask(id);
+export const deleteTask = async (id: string) => {
+  const status = await TaskModel.deleteTask(id);
 
   return status;
 };

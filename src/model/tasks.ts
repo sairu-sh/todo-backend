@@ -1,6 +1,7 @@
-import { getRandomId } from "../utils/utils";
+import BaseModel from "./baseModel";
 import { Task } from "./TASK";
 import { TaskList } from "./TASKLIST";
+import knex from "knex";
 
 const taskList = new TaskList();
 const task1 = new Task("title");
@@ -11,34 +12,53 @@ type CreateTaskParams = {
   description?: string;
 };
 
-export function createTask({ title, description }: CreateTaskParams) {
-  const task = new Task(title, description);
-  taskList.addToList(task);
-  return "success";
-}
+export default class TaskModel extends BaseModel {
+  static async createTask(body: CreateTaskParams) {
+    return this.queryBuilder().insert(body).table("tasks");
+  }
 
-export function getAll() {
-  return taskList.list;
-}
+  static async getAll() {
+    return this.queryBuilder()
+      .select({
+        id: "id",
+        title: "title",
+        description: "description",
+      })
+      .from("tasks");
+  }
 
-export function getCompleted() {
-  return taskList.list.filter((task) => task.isCompleted);
-}
+  static async getCompleted() {
+    return this.queryBuilder()
+      .select({
+        id: "id",
+        title: "title",
+        description: "description",
+      })
+      .from("tasks")
+      .where({ isCompleted: true });
+  }
 
-export function getRemaining() {
-  return taskList.list.filter((task) => !task.isCompleted);
-}
+  static async getRemaining() {
+    return this.queryBuilder()
+      .select({
+        id: "id",
+        title: "title",
+        description: "description",
+      })
+      .from("tasks")
+      .where({ isCompleted: false });
+  }
 
-export function toggleCompleted(id: string) {
-  const task = taskList.list.find((task) => task.id === id);
-  task?.toggleCompleted();
-  return task;
-}
+  static async toggleCompleted(id: number) {
+    return this.queryBuilder()
+      .update({
+        isCompleted: this.queryBuilder().raw('NOT "is_completed"'),
+      })
+      .from("tasks")
+      .where({ id });
+  }
 
-export function deleteTask(id: string) {
-  const task = taskList.list.find((task) => task.id === id);
-  if (task) {
-    taskList.removeFromList(id);
-    return true;
-  } else return false;
+  static async deleteTask(id: string) {
+    return this.queryBuilder().delete().from("tasks").where({ id });
+  }
 }
