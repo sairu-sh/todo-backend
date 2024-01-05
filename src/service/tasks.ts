@@ -1,5 +1,7 @@
 import { SlowBuffer } from "buffer";
 import TaskModel from "../model/tasks";
+import { buildMeta, getPaginationOptions } from "../utils/pagination";
+import { GetTasksQuery } from "../interfaces/tasks";
 
 type CreateTaskParams = {
   title: string;
@@ -11,22 +13,61 @@ export const createTask = async (body: CreateTaskParams) => {
   return status;
 };
 
-export const getAll = async () => {
-  const data = await TaskModel.getAll();
+export const getAll = async (query: GetTasksQuery) => {
+  const { page, size } = query;
 
-  return data;
+  const pageDetails = getPaginationOptions({ page, size });
+
+  const tasksPromise = TaskModel.getAll({ ...pageDetails, ...query });
+  const countPromise = TaskModel.countAll(query);
+
+  const [tasks, count] = await Promise.all([tasksPromise, countPromise]);
+
+  const total = count.count;
+  const meta = buildMeta(total, size, page);
+
+  return {
+    data: tasks,
+    meta,
+  };
 };
 
-export const getCompleted = async () => {
-  const data = await TaskModel.getCompleted();
+export const getCompleted = async (query: GetTasksQuery) => {
+  const { page, size } = query;
 
-  return data;
+  const pageDetails = getPaginationOptions({ page, size });
+
+  const tasksPromise = TaskModel.getCompleted({ ...pageDetails, ...query });
+  const countPromise = TaskModel.countAll(query);
+
+  const [tasks, count] = await Promise.all([tasksPromise, countPromise]);
+
+  const total = count.count;
+  const meta = buildMeta(total, size, page);
+
+  return {
+    data: tasks,
+    meta,
+  };
 };
 
-export const getRemaining = async () => {
-  const data = await TaskModel.getRemaining();
+export const getRemaining = async (query: GetTasksQuery) => {
+  const { page, size } = query;
 
-  return data;
+  const pageDetails = getPaginationOptions({ page, size });
+
+  const tasksPromise = TaskModel.getRemaining({ ...pageDetails, ...query });
+  const countPromise = TaskModel.countAll(query);
+
+  const [tasks, count] = await Promise.all([tasksPromise, countPromise]);
+
+  const total = count.count;
+  const meta = buildMeta(total, size, page);
+
+  return {
+    data: tasks,
+    meta,
+  };
 };
 
 export const toggleCompleted = async (id: number) => {

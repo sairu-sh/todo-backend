@@ -1,7 +1,7 @@
 import BaseModel from "./baseModel";
 import { Task } from "./TASK";
 import { TaskList } from "./TASKLIST";
-import knex from "knex";
+import { GetTasksQuery } from "../interfaces/tasks";
 
 const taskList = new TaskList();
 const task1 = new Task("title");
@@ -17,36 +17,51 @@ export default class TaskModel extends BaseModel {
     return this.queryBuilder().insert(body).table("tasks");
   }
 
-  static async getAll() {
-    return this.queryBuilder()
+  static countAll(params: any) {
+    const query = this.queryBuilder()
+      .table("tasks")
+      .count({ count: "id" })
+      .first();
+
+    if (params.addedDate) {
+      query.where("added_date", "<=", params.addedDate);
+    }
+
+    return query;
+  }
+
+  static async getTasksByType(params: any, isCompleted: boolean | null = null) {
+    const query = this.queryBuilder()
       .select({
         id: "id",
         title: "title",
         description: "description",
       })
       .from("tasks");
+
+    if (isCompleted !== null) {
+      query.where("isCompleted", "=", isCompleted);
+    }
+
+    query.offset(params.offset).limit(params.limit);
+
+    if (params.addedDate) {
+      query.where("addedDate", "<=", params.addedDate);
+    }
+
+    return query;
   }
 
-  static async getCompleted() {
-    return this.queryBuilder()
-      .select({
-        id: "id",
-        title: "title",
-        description: "description",
-      })
-      .from("tasks")
-      .where({ isCompleted: true });
+  static async getAll(params: any) {
+    return this.getTasksByType(params, null);
   }
 
-  static async getRemaining() {
-    return this.queryBuilder()
-      .select({
-        id: "id",
-        title: "title",
-        description: "description",
-      })
-      .from("tasks")
-      .where({ isCompleted: false });
+  static async getCompleted(params: any) {
+    return this.getTasksByType(params, true);
+  }
+
+  static async getRemaining(params: any) {
+    return this.getTasksByType(params, false);
   }
 
   static async toggleCompleted(id: number) {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as taskServices from "../service/tasks";
 import NotFoundError from "../error/taskNotFound";
+import { GetTasksQuery } from "../interfaces/tasks";
 
 export const getAll = async (
   req: Request,
@@ -8,8 +9,8 @@ export const getAll = async (
   next: NextFunction
 ) => {
   try {
-    const data = await taskServices.getAll();
-
+    const query = req.query;
+    const data = await taskServices.getAll(query as unknown as GetTasksQuery);
     if (data === null) {
       throw new NotFoundError("no tasks found");
     } else {
@@ -33,7 +34,10 @@ export const getCompleted = async (
   next: NextFunction
 ) => {
   try {
-    const data = await taskServices.getCompleted();
+    const query = req.query;
+    const data = await taskServices.getCompleted(
+      query as unknown as GetTasksQuery
+    );
 
     if (data === null) {
       throw new NotFoundError("no tasks found");
@@ -51,7 +55,10 @@ export const getRemaining = async (
   next: NextFunction
 ) => {
   try {
-    const data = await taskServices.getRemaining();
+    const query = req.query;
+    const data = await taskServices.getRemaining(
+      query as unknown as GetTasksQuery
+    );
 
     if (data === null) {
       throw new NotFoundError("no tasks found");

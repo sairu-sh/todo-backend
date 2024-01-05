@@ -5,9 +5,11 @@ const getTasksSchema = Joi.object({
     "number.base": "Page should be an integer",
   }),
 
-  size: Joi.number().integer().min(1).max(40).default(10).messages({
+  size: Joi.number().integer().min(1).max(40).default(5).messages({
     "number.base": "Size should be an integer",
   }),
+
+  addedDate: Joi.date().iso(),
 });
 
 const createTaskSchema = Joi.object({
